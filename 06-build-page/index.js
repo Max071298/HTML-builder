@@ -88,42 +88,33 @@ fs.readdir(
 
 // 3. assets copying
 
-fs.readdir(
+copyDir(
   path.join(__dirname, 'assets'),
-  { withFileTypes: true },
-  (err, files) => {
+  path.join(__dirname, 'project-dist', 'assets'),
+);
+
+function copyDir(baseDirectory, newDirectory) {
+  fs.mkdir(newDirectory, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+
+  fs.readdir(baseDirectory, { withFileTypes: true }, (err, files) => {
     if (err) throw err;
     files.forEach((file) => {
-      fs.mkdir(
-        path.join(__dirname, 'project-dist', 'assets', file.name),
-        { recursive: true },
-        (err) => {
-          if (err) throw err;
-        },
-      );
-
-      fs.readdir(
-        path.join(file.path, file.name),
-        { withFileTypes: true },
-        (err, deepFiles) => {
-          if (err) throw err;
-          deepFiles.forEach((deepFile) => {
-            fs.copyFile(
-              path.join(deepFile.path, deepFile.name),
-              path.join(
-                __dirname,
-                'project-dist',
-                'assets',
-                file.name,
-                deepFile.name,
-              ),
-              (err) => {
-                if (err) throw err;
-              },
-            );
-          });
-        },
-      );
+      if (file.isFile()) {
+        fs.copyFile(
+          path.join(file.path, file.name),
+          path.join(newDirectory, file.name),
+          (err) => {
+            if (err) throw err;
+          },
+        );
+      } else if (file.isDirectory()) {
+        copyDir(
+          path.join(file.path, file.name),
+          path.join(newDirectory, file.name),
+        );
+      }
     });
-  },
-);
+  });
+}

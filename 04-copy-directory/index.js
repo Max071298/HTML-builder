@@ -20,8 +20,10 @@ function copyDir(baseDirectory, newDirectory) {
           },
         );
       } else if (file.isDirectory()) {
-        const newSubFolder = path.join(newDirectory, file.name);
-        copyDir(file.path, newSubFolder);
+        copyDir(
+          path.join(file.path, file.name),
+          path.join(newDirectory, file.name),
+        );
       }
     });
   });
