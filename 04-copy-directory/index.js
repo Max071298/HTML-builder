@@ -1,23 +1,28 @@
 const fs = require('fs');
 const path = require('path');
 
-fs.mkdir(path.join(__dirname, 'files-copy'), { recursive: true }, (err) => {
-  if (err) throw err;
-});
+copyDir(path.join(__dirname, 'files'), path.join(__dirname, 'files-copy'));
 
-fs.readdir(
-  path.join(__dirname, 'files'),
-  { withFileTypes: true },
-  (err, files) => {
+function copyDir(baseDirectory, newDirectory) {
+  fs.mkdir(newDirectory, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+
+  fs.readdir(baseDirectory, { withFileTypes: true }, (err, files) => {
     if (err) throw err;
     files.forEach((file) => {
-      fs.copyFile(
-        path.join(file.path, file.name),
-        path.join(__dirname, 'files-copy', file.name),
-        (err) => {
-          if (err) throw err;
-        },
-      );
+      if (file.isFile()) {
+        fs.copyFile(
+          path.join(file.path, file.name),
+          path.join(newDirectory, file.name),
+          (err) => {
+            if (err) throw err;
+          },
+        );
+      } else if (file.isDirectory()) {
+        const newSubFolder = path.join(newDirectory, file.name);
+        copyDir(file.path, newSubFolder);
+      }
     });
-  },
-);
+  });
+}
