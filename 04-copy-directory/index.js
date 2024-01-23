@@ -18,17 +18,6 @@ function copyDir(baseDirectory, newDirectory) {
     if (err) throw err;
   });
 
-  fs.readdir(newDirectory, { withFileTypes: true }, (err, files) => {
-    if (err) throw err;
-    if (files.length) {
-      files.forEach((file) => {
-        fs.unlink(path.join(file.path, file.name), (err) => {
-          if (err) throw err;
-        });
-      });
-    }
-  });
-
   fs.readdir(baseDirectory, { withFileTypes: true }, (err, files) => {
     if (err) throw err;
     files.forEach((file) => {
