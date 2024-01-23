@@ -5,14 +5,6 @@ fs.mkdir(path.join(__dirname, 'project-dist'), { recursive: true }, (err) => {
   if (err) throw err;
 });
 
-fs.mkdir(
-  path.join(__dirname, 'project-dist', 'assets'),
-  { recursive: true },
-  (err) => {
-    if (err) throw err;
-  },
-);
-
 const indexHTML = fs.createWriteStream(
   path.join(__dirname, 'project-dist', 'index.html'),
 );
@@ -88,9 +80,19 @@ fs.readdir(
 
 // 3. assets copying
 
-copyDir(
-  path.join(__dirname, 'assets'),
+fs.rm(
   path.join(__dirname, 'project-dist', 'assets'),
+  {
+    recursive: true,
+  },
+  (err) => {
+    if (err) {
+    }
+    copyDir(
+      path.join(__dirname, 'assets'),
+      path.join(__dirname, 'project-dist', 'assets'),
+    );
+  },
 );
 
 function copyDir(baseDirectory, newDirectory) {
